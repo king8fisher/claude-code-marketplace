@@ -1,0 +1,10 @@
+{
+  "name": "ralph-wiggum",
+  "version": "1.0.0",
+  "description": "Self-referential AI loop - Claude iterates on tasks until completion or max iterations",
+  "author": {
+    "name": "king8fisher"
+  },
+  "license": "MIT",
+  "keywords": ["loop", "iteration", "automation", "self-correction"]
+}

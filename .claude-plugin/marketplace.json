@@ -1,0 +1,19 @@
+{
+  "name": "king8fisher-plugins",
+  "owner": {
+    "name": "king8fisher"
+  },
+  "metadata": {
+    "description": "Claude Code plugins collection",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "ralph-wiggum",
+      "source": "./plugins/ralph-wiggum",
+      "description": "Self-referential AI loop - Claude iterates on tasks until completion",
+      "version": "1.0.0",
+      "tags": ["loop", "iteration", "automation"]
+    }
+  ]
+}
