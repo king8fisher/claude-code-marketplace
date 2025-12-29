@@ -45,4 +45,4 @@ Cancel the current Ralph loop immediately.
 
 - Use `--completion-promise` for defined end states
 - Use `--max-iterations` as a safety limit
-- Monitor progress: `head -10 .claude/ralph-loop.local.md`
+- Monitor progress: `head -10 .claude/ralph-loop.*.local.md`

@@ -9,7 +9,7 @@ set -euo pipefail
 # Parse arguments
 PROMPT_PARTS=()
 MAX_ITERATIONS=10
-COMPLETION_PROMISE="DONE"
+COMPLETION_PROMISE="IMPLEMENTED"
 
 # Parse options and positional arguments
 while [[ $# -gt 0 ]]; do
@@ -26,15 +26,18 @@ ARGUMENTS:
 
 OPTIONS:
   -n, --max-iterations <n>       Max iterations (default: 10, use 0 for unlimited)
-  -p, --completion-promise '<text>'  Promise phrase (default: DONE)
+  -p, --completion-promise '<text>'  Promise phrase (default: IMPLEMENTED)
   -h, --help                     Show this help message
 
 DESCRIPTION:
-  Starts a Ralph Wiggum loop. Exits when Claude outputs <promise>DONE</promise>
+  Starts a Ralph Wiggum loop. Exits when Claude outputs <promise>IMPLEMENTED</promise>
   or after 10 iterations (whichever comes first).
 
+  IMPORTANT: "IMPLEMENTED" means code changes are complete and working.
+  Planning alone is NOT implementation - code must be written!
+
 EXAMPLES:
-  /ralph-loop Fix the auth bug                      (default: 10 iterations, promise DONE)
+  /ralph-loop Fix the auth bug                      (exits after code is implemented)
   /ralph-loop -n 0 Refactor cache layer             (unlimited iterations)
   /ralph-loop -p 'Tests pass' Add unit tests        (custom promise)
 
@@ -42,11 +45,11 @@ STOPPING:
   Loop exits when Claude outputs <promise>PHRASE</promise> or max iterations reached.
 
 MONITORING:
-  # View current iteration:
-  grep '^iteration:' .claude/ralph-loop.local.md
+  # View current iteration (PID is session-specific):
+  grep '^iteration:' .claude/ralph-loop.*.local.md
 
   # View full state:
-  head -10 .claude/ralph-loop.local.md
+  head -10 .claude/ralph-loop.*.local.md
 HELP_EOF
       exit 0
       ;;
@@ -91,6 +94,10 @@ fi
 # Create state file for stop hook (markdown with YAML frontmatter)
 mkdir -p .claude
 
+# Use PPID to create session-specific state file
+# This prevents conflicts when multiple Claude sessions run in same directory
+RALPH_STATE_FILE=".claude/ralph-loop.${PPID}.local.md"
+
 # Quote completion promise for YAML if it contains special chars or is not null
 if [[ -n "$COMPLETION_PROMISE" ]] && [[ "$COMPLETION_PROMISE" != "null" ]]; then
   COMPLETION_PROMISE_YAML="\"$COMPLETION_PROMISE\""
@@ -98,7 +105,7 @@ else
   COMPLETION_PROMISE_YAML="null"
 fi
 
-cat > .claude/ralph-loop.local.md <<EOF
+cat > "$RALPH_STATE_FILE" <<EOF
 ---
 active: true
 iteration: 1
@@ -125,7 +132,8 @@ else
   echo "Completion promise: none (runs forever)"
 fi
 echo ""
-echo "To monitor: head -10 .claude/ralph-loop.local.md"
+echo "State file: $RALPH_STATE_FILE"
+echo "To monitor: head -10 $RALPH_STATE_FILE"
 echo ""
 
 # Display completion promise info if set (moved from ralph-loop.md)

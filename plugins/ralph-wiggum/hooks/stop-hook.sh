@@ -9,11 +9,12 @@ set -euo pipefail
 # Read hook input from stdin (advanced stop hook API)
 HOOK_INPUT=$(cat)
 
-# Check if ralph-loop is active
-RALPH_STATE_FILE=".claude/ralph-loop.local.md"
+# Check if ralph-loop is active for THIS session
+# Uses PPID to find session-specific state file (prevents cross-session interference)
+RALPH_STATE_FILE=".claude/ralph-loop.${PPID}.local.md"
 
 if [[ ! -f "$RALPH_STATE_FILE" ]]; then
-  # No active loop - allow exit
+  # No active loop for this session - allow exit
   exit 0
 fi
 
