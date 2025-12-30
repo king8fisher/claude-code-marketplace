@@ -1,7 +1,7 @@
 ---
 description: "Cancel active Ralph Wiggum loop"
 allowed-tools: Bash
-hide-from-slash-command-tool: "true"
+hide-from-slash-command-tool: true
 ---
 
 # Cancel Ralph Loop

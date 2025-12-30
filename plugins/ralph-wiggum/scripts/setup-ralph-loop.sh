@@ -10,6 +10,12 @@ set -euo pipefail
 PROMPT_PARTS=()
 MAX_ITERATIONS=10
 COMPLETION_PROMISE="IMPLEMENTED"
+STDIN_PROMPT=""
+
+# Read from stdin if available (heredoc support)
+if [[ ! -t 0 ]]; then
+  STDIN_PROMPT=$(cat)
+fi
 
 # Parse options and positional arguments
 while [[ $# -gt 0 ]]; do
@@ -81,8 +87,12 @@ HELP_EOF
   esac
 done
 
-# Join all prompt parts with spaces
-PROMPT="${PROMPT_PARTS[*]}"
+# Use stdin prompt if provided, otherwise join command line args
+if [[ -n "$STDIN_PROMPT" ]]; then
+  PROMPT="$STDIN_PROMPT"
+else
+  PROMPT="${PROMPT_PARTS[*]}"
+fi
 
 # Validate prompt is non-empty
 if [[ -z "$PROMPT" ]]; then

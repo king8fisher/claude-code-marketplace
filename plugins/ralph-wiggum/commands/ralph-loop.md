@@ -2,14 +2,18 @@
 description: "Start Ralph Wiggum loop in current session"
 argument-hint: "PROMPT [-n N] [-p '<promise>']"
 allowed-tools: Bash
-hide-from-slash-command-tool: "true"
+hide-from-slash-command-tool: true
 ---
 
 # Ralph Loop Command
 
-Execute the setup script to initialize the Ralph loop:
+Execute the setup script to initialize the Ralph loop. Run this Bash command:
 
-!`"${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph-loop.sh" $ARGUMENTS`
+```bash
+"${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph-loop.sh" <<'RALPH_EOF'
+$ARGUMENTS
+RALPH_EOF
+```
 
 Please work on the task. When you try to exit, the Ralph loop will feed the SAME PROMPT back to you for the next iteration. You'll see your previous work in files and git history, allowing you to iterate and improve.
 

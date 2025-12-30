@@ -1,7 +1,7 @@
 ---
 description: "Explain Ralph Wiggum technique and available commands"
 allowed-tools: []
-hide-from-slash-command-tool: "true"
+hide-from-slash-command-tool: true
 ---
 
 # Ralph Wiggum Plugin Help
