@@ -94,6 +94,18 @@ fi
 # Create state file for stop hook (markdown with YAML frontmatter)
 mkdir -p .claude
 
+# Clean up stale ralph-loop files from dead processes
+for stale_file in .claude/ralph-loop.*.local.md; do
+  [[ -f "$stale_file" ]] || continue
+  # Extract PID from filename
+  stale_pid=$(basename "$stale_file" | sed 's/ralph-loop\.\([0-9]*\)\.local\.md/\1/')
+  # Check if process exists (kill -0 tests without sending signal)
+  if ! kill -0 "$stale_pid" 2>/dev/null; then
+    echo "Cleaning stale ralph-loop file from dead process $stale_pid"
+    rm -f "$stale_file"
+  fi
+done
+
 # Use PPID to create session-specific state file
 # This prevents conflicts when multiple Claude sessions run in same directory
 RALPH_STATE_FILE=".claude/ralph-loop.${PPID}.local.md"
