@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Claude Code plugins collection",
-    "version": "1.0.0"
+    "version": "1.1.1"
   },
   "plugins": [
     {
       "name": "ralph-wiggum",
       "source": "./plugins/ralph-wiggum",
       "description": "Self-referential AI loop - Claude iterates on tasks until completion",
-      "version": "1.0.0",
+      "version": "1.1.1",
       "tags": ["loop", "iteration", "automation"]
     }
   ]
