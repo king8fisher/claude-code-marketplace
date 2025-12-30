@@ -18,8 +18,6 @@ Custom plugins for Claude Code.
 
 Fork of [ralph-wiggum from claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/ralph-wiggum) with multi-session support.
 
-> **TODO:** Check upstream for changes and backport bug fixes. Forked before official versioning - compare against current upstream state.
-
 Self-referential AI loop - Claude iterates on tasks until completion.
 
 **Enhancements:**

@@ -105,20 +105,25 @@ fi
 mkdir -p .claude
 
 # Clean up stale ralph-loop files from dead processes
-for stale_file in .claude/ralph-loop.*.local.md; do
+for stale_file in .claude/ralph-loop.*.local.md .claude/ralph-loop-history.*.tmp; do
   [[ -f "$stale_file" ]] || continue
-  # Extract PID from filename
-  stale_pid=$(basename "$stale_file" | sed 's/ralph-loop\.\([0-9]*\)\.local\.md/\1/')
+  # Extract PID from filename (handles both state and history files)
+  stale_pid=$(basename "$stale_file" | sed -E 's/ralph-loop(-history)?\.([0-9]+)\..*/\2/')
   # Check if process exists (kill -0 tests without sending signal)
   if ! kill -0 "$stale_pid" 2>/dev/null; then
-    echo "Cleaning stale ralph-loop file from dead process $stale_pid"
+    echo "Cleaning stale file from dead process $stale_pid: $stale_file"
     rm -f "$stale_file"
   fi
 done
 
-# Use PPID to create session-specific state file
-# This prevents conflicts when multiple Claude sessions run in same directory
-RALPH_STATE_FILE=".claude/ralph-loop.${PPID}.local.md"
+# Get Claude Code's PID (our grandparent: Claude Code -> shell -> this script)
+# This is the common ancestor that both setup and stop-hook can identify
+CLAUDE_PID=$(ps -o ppid= -p $PPID 2>/dev/null | tr -d ' ')
+if [[ -z "$CLAUDE_PID" ]]; then
+  # Fallback to PPID if grandparent lookup fails
+  CLAUDE_PID=$PPID
+fi
+RALPH_STATE_FILE=".claude/ralph-loop.${CLAUDE_PID}.local.md"
 
 # Quote completion promise for YAML if it contains special chars or is not null
 if [[ -n "$COMPLETION_PROMISE" ]] && [[ "$COMPLETION_PROMISE" != "null" ]]; then
