@@ -1,0 +1,11 @@
+{
+  "name": "claude-code-marketplace",
+  "private": true,
+  "scripts": {
+    "test": "bun test",
+    "test:ralph": "bun test plugins/ralph-wiggum/tests/"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}

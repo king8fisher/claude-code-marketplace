@@ -90,8 +90,10 @@ done
 # Use stdin prompt if provided, otherwise join command line args
 if [[ -n "$STDIN_PROMPT" ]]; then
   PROMPT="$STDIN_PROMPT"
-else
+elif [[ ${#PROMPT_PARTS[@]} -gt 0 ]]; then
   PROMPT="${PROMPT_PARTS[*]}"
+else
+  PROMPT=""
 fi
 
 # Validate prompt is non-empty
