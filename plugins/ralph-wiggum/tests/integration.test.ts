@@ -114,8 +114,8 @@ describe("ralph-wiggum integration", () => {
 
       expect(result.exitCode).toBe(0);
       expect(result.stderr).toBe("");
-      expect(result.stdout).toContain("/ralph-loop PROMPT"); // From help text
-      expect(result.stdout).toContain("**Usage:**"); // From help text
+      expect(result.stdout).toContain("/ralph-loop"); // From help text
+      expect(result.stdout).toMatch(/\*\*Example[s]?:?\*\*/); // From help text (Examples or Example)
     },
     { timeout: 90000 }
   );

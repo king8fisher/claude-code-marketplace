@@ -103,6 +103,21 @@ if [[ -z "$PROMPT" ]]; then
   exit 1
 fi
 
+# Split concatenated checkbox items onto separate lines
+# Handles: -[] -[ ] - [] - [ ] [] [ ] (with word content before them)
+# Example: "-[] task1 -[] task2" becomes "-[] task1\n-[] task2"
+# Uses lookbehind to require alphanumeric char before space (avoids breaking "- [ ]")
+PROMPT=$(echo "$PROMPT" | perl -pe 's/(?<=[a-zA-Z0-9]) (-? ?\[[ ]?\])/\n$1/g')
+
+# Ensure prompt has at least one checkbox item for the loop to work on
+# Check for unchecked items: [ ] or [] with optional leading whitespace/list marker
+if ! echo "$PROMPT" | grep -qE '^\s*-?\s*\[\s*\]'; then
+  # No checkbox items found - convert prompt to checkbox format
+  # and add a continuation item
+  PROMPT="- [ ] $PROMPT
+- [ ] Work on the task above"
+fi
+
 # Create state file for stop hook (markdown with YAML frontmatter)
 mkdir -p .claude
 

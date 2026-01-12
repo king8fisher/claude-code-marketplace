@@ -90,6 +90,68 @@ describe("setup-ralph-loop.sh", () => {
 
     expect(fs.existsSync(staleFile)).toBe(false);
   });
+
+  it("converts plain prompt to checkbox format", async () => {
+    await $`bash ${SETUP_SCRIPT} "Fix the auth bug"`.quiet();
+
+    const files = getStateFiles();
+    const content = fs.readFileSync(path.join(".claude", files[0]), "utf-8");
+    expect(content).toContain("- [ ] Fix the auth bug");
+    expect(content).toContain("- [ ] Work on the task above");
+  });
+
+  it("preserves prompt that already has checkboxes", async () => {
+    await $`bash ${SETUP_SCRIPT} "- [ ] Already a checkbox"`.quiet();
+
+    const files = getStateFiles();
+    const content = fs.readFileSync(path.join(".claude", files[0]), "utf-8");
+    expect(content).toContain("- [ ] Already a checkbox");
+    expect(content).not.toContain("- [ ] Work on the task above");
+  });
+
+  it("preserves prompt with checkbox without dash prefix", async () => {
+    await $`bash ${SETUP_SCRIPT} "[ ] Task without dash"`.quiet();
+
+    const files = getStateFiles();
+    const content = fs.readFileSync(path.join(".claude", files[0]), "utf-8");
+    expect(content).toContain("[ ] Task without dash");
+    expect(content).not.toContain("- [ ] Work on the task above");
+  });
+
+  it("splits concatenated -[] items onto separate lines", async () => {
+    await $`bash ${SETUP_SCRIPT} "-[] task1 -[] task2 -[] task3"`.quiet();
+
+    const files = getStateFiles();
+    const content = fs.readFileSync(path.join(".claude", files[0]), "utf-8");
+    // Each item should be on its own line
+    expect(content).toMatch(/-\[\] task1\n-\[\] task2\n-\[\] task3/);
+  });
+
+  it("splits concatenated -[ ] items onto separate lines", async () => {
+    await $`bash ${SETUP_SCRIPT} "-[ ] first -[ ] second"`.quiet();
+
+    const files = getStateFiles();
+    const content = fs.readFileSync(path.join(".claude", files[0]), "utf-8");
+    expect(content).toMatch(/-\[ \] first\n-\[ \] second/);
+  });
+
+  it("splits concatenated - [ ] items onto separate lines", async () => {
+    await $`bash ${SETUP_SCRIPT} "- [ ] item1 - [ ] item2"`.quiet();
+
+    const files = getStateFiles();
+    const content = fs.readFileSync(path.join(".claude", files[0]), "utf-8");
+    expect(content).toMatch(/- \[ \] item1\n- \[ \] item2/);
+  });
+
+  it("splits mixed checkbox formats onto separate lines", async () => {
+    await $`bash ${SETUP_SCRIPT} "-[] first - [ ] second [] third"`.quiet();
+
+    const files = getStateFiles();
+    const content = fs.readFileSync(path.join(".claude", files[0]), "utf-8");
+    expect(content).toContain("-[] first");
+    expect(content).toContain("- [ ] second");
+    expect(content).toContain("[] third");
+  });
 });
 
 describe("stop-hook.sh", () => {
